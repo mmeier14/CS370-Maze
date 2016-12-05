@@ -2,10 +2,10 @@
 #define _MAZEALG_CPP_
 
 //edit these to modify how the maze generates
-#define paths 6//number of paths created
-#define MAX_X 30//number of units wide
-#define MAX_Y 30//number of units tall
-#define deadends 3//number of deadend paths generated, these are generated independantly of the paths
+#define paths 12//number of paths created
+#define MAX_X 50//number of units wide
+#define MAX_Y 50//number of units tall
+#define deadends 5//number of deadend paths generated, these are generated independantly of the paths
 #define entrancex 12//it is assumed that the entrance is on the bottom edge, this controls where on said edge
 #define exitx 7//same as above
 #include <stdlib.h>
@@ -51,30 +51,34 @@ void generate_maze(bool (*maze)[MAX_X][MAX_Y]){
   bool xfirst = false;
   point1x = entrancex;
   point1y = 0;
-  int xpoints[paths];
-  int ypoints[paths];
+  int xpoints[paths+2];
+  int ypoints[paths+2];
+  xpoints[0] = entrancex;
+  ypoints[0] = 0;
+  xpoints[1] = exitx;
+  ypoints[1] = MAX_Y;
   for(int c = 0; c < paths; c++){
     bool newpoint;//this is to make sure the paths don't generate too close to each other, xpoints and ypoints track what x and y values have already been used, and if the points are within 1 of one that has been already used, the paths would have a chance of being adjacent to each other, creating a double wide path, so this should prevent that
     do{
       newpoint = true;
       point2x = rand() % (MAX_X - 2) + 1;//less than MAX_X, but greater than 0
       //cout << newxpoint << '\n';
-      for(int q = 0; q < c; q++){
-        cout << "test " << point2x << " against " << xpoints[q] << " and " << xpoints[q] + 1 << " and " << xpoints[q] - 1 << '\n';
+      for(int q = 0; q < c+2; q++){
+        //cout << "test " << point2x << " against " << xpoints[q] << " and " << xpoints[q] + 1 << " and " << xpoints[q] - 1 << '\n';
         //cout << (point2x == xpoints[c]) << '\n';
         //cout << (point2x == (xpoints[c] + 1)) << '\n';
         //cout << (point2x == (xpoints[c] - 1)) << '\n';
         if(point2x == (xpoints[q] + 1)){
           newpoint = false;
-          cout << "regenerating\n";
+          //cout << "regenerating\n";
         }
         if(point2x == (xpoints[q] - 1)){
           newpoint = false;
-          cout << "regenerating\n";
+          //cout << "regenerating\n";
         }
         if(point2x == xpoints[q]){
           newpoint = false;
-          cout << "regenerating\n";
+          //cout << "regenerating\n";
         }
       }
     }while(!newpoint);
@@ -83,24 +87,24 @@ void generate_maze(bool (*maze)[MAX_X][MAX_Y]){
       newpoint = true;
       point2y = rand() % (MAX_Y - 2) + 1;//less than MAX_Y, but greater than 0
       //cout << newypoint << '\n';
-      for(int q = 0; q < c; q++){
-        cout << "test " << point2y << " against " << ypoints[q] <<  " and " << ypoints[q] + 1 << " and " << ypoints[q] - 1 << '\n';
+      for(int q = 0; q < c+2; q++){
+        //cout << "test " << point2y << " against " << ypoints[q] <<  " and " << ypoints[q] + 1 << " and " << ypoints[q] - 1 << '\n';
         if(point2y == (ypoints[q] + 1)){
           newpoint = false;
-          cout << "regenerating\n";
+          //cout << "regenerating\n";
         }
         if(point2y == (ypoints[q] - 1)){
           newpoint = false;
-          cout << "regenerating\n";
+          //cout << "regenerating\n";
         }
         if(point2y == ypoints[q]){
           newpoint = false;
-          cout << "regenerating\n";
+          //cout << "regenerating\n";
         }
       }
     }while(!newpoint);
         
-    cout << "Set :" << point2x << ' ' << point2y << '\n';
+    //cout << "Set :" << point2x << ' ' << point2y << '\n';
     if(xfirst){
       pathx(maze,point1x,point1y,point2x);
       pathy(maze,point2x,point1y,point2y);
@@ -110,15 +114,15 @@ void generate_maze(bool (*maze)[MAX_X][MAX_Y]){
       pathx(maze,point1x,point2y,point2x);
     }
     xfirst = rand() % 2;
-    xpoints[c] = point2x;
-    ypoints[c] = point2y;
+    xpoints[c+2] = point2x;
+    ypoints[c+2] = point2y;
     point1x = point2x;
     point1y = point2y;
   }
   int deadendxs[deadends];
   int deadendys[deadends];
   for(int c = 0; c < deadends; c++){
-    int startpoint = rand() % paths;
+    int startpoint = (rand() % paths) + 2;
     point1x = xpoints[startpoint];
     point1y = ypoints[startpoint];
     bool newpoint;//this is to make sure the paths don't generate too close to each other
@@ -126,7 +130,7 @@ void generate_maze(bool (*maze)[MAX_X][MAX_Y]){
       newpoint = true;
       point2x = rand() % (MAX_X - 2) + 1;//less than MAX_X, but greater than 0
       //cout << newxpoint << '\n';
-      for(int q = 0; q < paths; q++){
+      for(int q = 0; q < paths+2; q++){
         if(point2x == (xpoints[q]+1)){
           newpoint = false;
         }
@@ -152,7 +156,7 @@ void generate_maze(bool (*maze)[MAX_X][MAX_Y]){
     do{
       newpoint = true;
       point2y = rand() % (MAX_Y - 2) + 1;//less than MAX_Y, but greater than 0
-      for(int q = 0; q < paths; q++){
+      for(int q = 0; q < paths+2; q++){
         if(point2y == (ypoints[q]+1)){
           newpoint = false;
         }
@@ -175,8 +179,8 @@ void generate_maze(bool (*maze)[MAX_X][MAX_Y]){
         }
       }
     }while(!newpoint);
-    cout << "Start " << point1x << ' ' << point1y << '\n';
-    cout << "Dead :" << point2x << ' ' << point2y << '\n';
+    //cout << "Start " << point1x << ' ' << point1y << '\n';
+    //cout << "Dead :" << point2x << ' ' << point2y << '\n';
     xfirst = rand() % 2;
     if(xfirst){
       pathx(maze,point1x,point1y,point2x);
@@ -189,8 +193,14 @@ void generate_maze(bool (*maze)[MAX_X][MAX_Y]){
     deadendxs[c] = point2x;
     deadendys[c] = point2y;
   }
-  pathx(maze,xpoints[paths-1],ypoints[paths-1],exitx);
-  pathy(maze,exitx,ypoints[paths-1],MAX_Y);
+  pathx(maze,xpoints[paths+1],ypoints[paths+1],exitx);
+  pathy(maze,exitx,ypoints[paths+1],MAX_Y);
+  for(int g = 0; g < MAX_X; g++){
+    if(!(*maze)[g][MAX_Y] && g != exitx)(*maze)[g][MAX_Y] = true;
+  }
+  for(int g = 0; g < MAX_X; g++){
+    if(!(*maze)[g][0] && g != entrancex)(*maze)[g][0] = true;
+  }
 }
     
 #endif
